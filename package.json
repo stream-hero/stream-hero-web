@@ -1,0 +1,45 @@
+{
+  "name": "stream-hero-web",
+  "version": "1.0.0",
+  "description": "React website brain for Stream Hero",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava",
+    "dev": "node server.js",
+    "build": "next build",
+    "start": "NODE_ENV=production node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stream-hero/stream-hero-web.git"
+  },
+  "keywords": [
+    "elgato",
+    "stream",
+    "deck",
+    "alternative",
+    "touch",
+    "portal",
+    "obs",
+    "macro",
+    "streaming"
+  ],
+  "author": "Lacy Morrow <me@lacymorrow.com> (http://lacymorrow.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stream-hero/stream-hero-web/issues"
+  },
+  "homepage": "https://github.com/stream-hero/stream-hero-web#readme",
+  "dependencies": {
+    "express": "^4.16.4",
+    "next": "^8.1.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
+    "socket.io": "^2.2.0",
+    "socket.io-client": "^2.2.0"
+  },
+  "devDependencies": {
+    "@zeit/next-sass": "^1.0.1",
+    "ava": "^1.4.1"
+  }
+}
