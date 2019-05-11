@@ -2,6 +2,7 @@
 // Make sure the syntax and sources this file requires are compatible with the current node version you are running
 // See https://github.com/zeit/next.js/issues/1245 for discussions on Universal Webpack or universal Babel
 const next = require("next");
+const open = require("open");
 
 const express = require("express");
 const { createServer } = require("http");
@@ -18,69 +19,10 @@ let port = process.env.PORT || 3000;
 // fake DB
 const messages = [];
 
-// io.on('connection', function(client) {
-//     console.log('Client connected...');
-
-//     client.on('join', function(data) {
-//         console.log(data);
-//     });
-
-// });
-
-// io.on("connection", function(socket) {
-// 	console.log("a user connected");
-// 	io.on("connected", function() {
-// 		console.log("user connected");
-// 	});
-
-// 	io.on("disconnect", function() {
-// 		console.log("user disconnected");
-// 	});
-
-// 	io.on("SEND_MESSAGE", function(data) {
-// 		console.log("message: " + data);
-
-// 		socket.emit("RECEIVE_MESSAGE", data);
-// 	});
-// 	socket.emit("connected", data);
-// });
-
-app.prepare()
-	// .then(() => {
-	// 	const server = express()
-
-	// 	// server.get("/io", (req, res) => {
-	// 	// 	app.render(req, res);
-	// 	// });
-
-	// 	server.get("/messages", (req, res) => {
-	// 		res.json(messages);
-	// 	});
-
-	// 	server.get("/p/:id", (req, res) => {
-	// 		const actualPage = "/post";
-	// 		const queryParams = { title: req.params.id };
-	// 		app.render(req, res, actualPage, queryParams);
-	// 	});
-
-	// 	server.get("*", (req, res) => {
-	// 		const parsedUrl = parse(req.url, true);
-	// 		const { pathname, query } = parsedUrl;
-	// 		return handle(req, res, parsedUrl);
-	// 	});
-
-	// 	server.listen(3000, err => {
-	// 		if (err) throw err;
-	// 		console.log("> Ready on http://localhost: " + port);
-	// 	});
-	// })
-	// .catch(ex => {
-	// 	console.error(ex.stack);
-	// 	process.exit(1);
-	// });
-
 // Custom Routing
-.then(() => {
+app.prepare().then(() => {
+
+
 	const server = createServer((req, res) => {
 		// Be sure to pass `true` as the second argument to `url.parse`.
 		// This tells it to parse the query portion of the URL.
@@ -90,7 +32,9 @@ app.prepare()
 		if (pathname === "/io") {
 			app.render(req, res, "/io", query);
 		} else if (pathname === "/messages") {
-			app.render(req, res, "/messages", query);
+			app.get('/messages', (req, res) => {
+				res.send(JSON.stringify(messages));
+			})
 		} else {
 			handle(req, res, parsedUrl);
 		}
@@ -99,27 +43,75 @@ app.prepare()
 		console.log("> Ready on http://localhost:" + port);
 	});
 
-	const io = socket.listen(server)
+	const io = socket.listen(server);
 
 	io.on("connect", socket => {
-		console.log('connection1')
-		socket.emit("now", {
-			message: "zeir~~~"
+		socket.emit("io", {
+			message: "~~~ Stream Hero Connected ~~~",
+			launch: {
+				test: 'test',
+				obs: 'obs',
+				discord: 'discord',
+				browser: 'browser',
+			}
 		});
 	});
 
 	// socket.io server
 	io.on("connection", socket => {
-		console.log('connection')
+		console.log("Socket connected: ", socket.id);
+
+		socket.on('io', (data) => {
+		  console.log('io', data)
+		});
+
 		socket.on("message", data => {
-			console.log('data: ', data)
+			if (data.value == 'launch') {
+				socket.broadcast.emit('io', {
+					open: true,
+					launch: 'obs'
+				})
+			}
+			console.log("message: ", data);
 			messages.push(data);
 			socket.broadcast.emit("message", data);
 		});
-		socket.on('disconnect', function(){
-		  console.log('user disconnected');
+
+		socket.on("disconnect", function() {
+			console.log("user disconnected");
 		});
 	});
 });
 
+// .then(() => {
+// 	const server = express()
 
+// 	// server.get("/io", (req, res) => {
+// 	// 	app.render(req, res);
+// 	// });
+
+// 	server.get("/messages", (req, res) => {
+// 		res.json(messages);
+// 	});
+
+// 	server.get("/p/:id", (req, res) => {
+// 		const actualPage = "/post";
+// 		const queryParams = { title: req.params.id };
+// 		app.render(req, res, actualPage, queryParams);
+// 	});
+
+// 	server.get("*", (req, res) => {
+// 		const parsedUrl = parse(req.url, true);
+// 		const { pathname, query } = parsedUrl;
+// 		return handle(req, res, parsedUrl);
+// 	});
+
+// 	server.listen(3000, err => {
+// 		if (err) throw err;
+// 		console.log("> Ready on http://localhost: " + port);
+// 	});
+// })
+// .catch(ex => {
+// 	console.error(ex.stack);
+// 	process.exit(1);
+// });
