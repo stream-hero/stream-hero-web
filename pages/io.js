@@ -25,8 +25,8 @@ class HelloUA extends React.Component {
 	componentDidMount() {
 		this.socket = io();
 		this.socket.on("message", this.handleMessage);
-		this.socket.on("io", data => {
-			this.setState(data)
+		this.socket.on("now", data => {
+			this.setState({text: data.message})
 		});
 	}
 
