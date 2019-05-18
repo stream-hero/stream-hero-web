@@ -1,26 +1,10 @@
-import Head from 'next/head';
-
-function IndexPage() {
-  return (
-    <div>
-      <Head>
-        <title>My page title</title>
-        <meta
-          name="viewport"
-          content="initial-scale=1.0, width=device-width"
-          key="viewport"
-        />
-      </Head>
-      <Head>
-        <meta
-          name="viewport"
-          content="initial-scale=1.2, width=device-width"
-          key="viewport"
-        />
-      </Head>
-      <p>Hello world!</p>
-    </div>
-  );
-}
-
-export default IndexPage;
+import Page from '../layouts/main'
+import Head from 'next/head'
+export default () => (
+  <Page>
+    <Head>
+      <title>Stream Hero</title>
+    </Head>
+    <p>my page with global styles!</p>
+  </Page>
+)
