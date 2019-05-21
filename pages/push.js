@@ -5,15 +5,11 @@ import fetch from "isomorphic-fetch";
 
 class HelloUA extends React.Component {
 	static async getInitialProps({ req }) {
-		const userAgent = req ? req.headers["user-agent"] : navigator.userAgent;
-		let messages = []
-		console.log('messages: ', messages)
-		return { userAgent, messages };
+		return { userAgent' IM A TTEEAPPPPPPORT' };
 	}
 
 	static defaultProps = {
-		userAgent: "",
-		messages: []
+		userAgent: ""
 	};
 
 	state = {
