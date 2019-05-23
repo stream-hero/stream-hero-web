@@ -17,15 +17,93 @@ const handle = app.getRequestHandler()
 
 let port = process.env.PORT || 3000
 
-// console.log(name.getRandomName())
-
-const randomName = () => {
-  return 'random'
-}
-
 // fake DB
 const messages = []
 const connections = {}
+
+/*
+users:
+	socket.hash
+	socket.id
+	uniqueName
+	gridSize
+
+	panels:
+		icon
+		text
+		color?
+		fonts?
+		styles?
+		css???
+
+		actions:
+
+			run:
+				start app (exe/app)
+				run batch file
+				run shortcut
+				open folder
+				run shell/powershell/js script
+
+			navigate:
+				Switch panels
+				Open URL
+
+			input:
+				text
+				keypress
+
+			utility:
+				timer
+				logout computer
+				lock computer
+				shutdown
+
+			audio:
+				play
+				pause
+				stop
+
+			media:
+				play
+				pause
+				stop
+				next track
+				prev track
+				volume up
+				volume down
+
+			obs:
+				scene select
+				source toggle
+				start stream
+				stop stream
+				start record
+				stop record
+				toggle record
+				mute
+				set volume
+				volume up
+				volume down
+
+			twitter:
+				tweet
+
+			twitch:
+				send message
+				clear chat
+				set stream marker
+				create clip
+				emote-only on
+				emote-only off
+				followers-only on
+				followers-only off
+				subs only on
+				subs only off
+				slow chat on
+				slow chat off
+
+*/
 
 // Socket.io server
 io.on('connection', socket => {
