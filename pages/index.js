@@ -1,20 +1,51 @@
-import Page from '../layouts/main'
+/*
+ * Index page
+ * Download links for client/apps
+ * Login link
+ * About link
+ * QR Scanner
+ */
+import Layout from '../layouts/main'
 import Meta from './section/Meta'
 // import Dashboard from './Dashboard'
 import Grid from './Grid'
-// import GenName from './GenName'
+import Qr from '../components/Qr'
 import Head from 'next/head'
 
-const title = 'Stream Hero Cloud'
+const title = 'SH Server'
 
 export default () => (
-  <Page>
+  <Layout>
     <Head>
       <title>{title}</title>
       <Meta />
     </Head>
     <h1>{title}</h1>
     <Grid />
+    <Qr />
+    <style jsx>{`
+      h1,
+      a {
+        font-family: 'Arial';
+      }
 
-  </Page>
+      ul {
+        padding: 0;
+      }
+
+      li {
+        list-style: none;
+        margin: 5px 0;
+      }
+
+      a {
+        text-decoration: none;
+        color: blue;
+      }
+
+      a:hover {
+        opacity: 0.6;
+      }
+    `}</style>
+  </Layout>
 )

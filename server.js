@@ -18,20 +18,73 @@ const handle = app.getRequestHandler()
 let port = process.env.PORT || 3000
 
 // fake DB
-const messages = []
-const connections = {}
+let messages = []
+let connections = {}
+let activeConnections = {}
+let ioActions = [
+  {
+    type: 'boot'
+  }
+]
+
+// let connections = {
+// 	heroName: {
+// 		socket.id,
+// 		socket.hash?
+// 		userID,
+// 		name,
+// 		phone,
+// 		gridSize,
+// 		emsil?
+// 		seetings
+// 	}
+// }
+
+// socket.emit('message', '~~~ Stream Hero Connected ~~~')
+// socket.emit('io', {
+// type: launch,
+//   launch: {
+//     test: 'test',
+//     obs: 'obs',
+//     discord: 'discord',
+//     browser: 'browser'
+//   }
+// })
 
 /*
+pm2 - process manager
+TWILIO - SMS verification
+Offline reconnection for mobile app: https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html
+
+io types besides launch
+
+SERVER ON CONNECT/reset:
+	enumerate connected users:
+		soucket.id:
+			Lookup heroname
+				If active on control device, attempt reconnect TODO
+
 users:
+	name
+	email?
+	phone?
 	socket.hash
 	socket.id
 	uniqueName
 	gridSize
 
+	settings:
+		grid size
+		launch on system start
+		tray only (hide from dock)
+		dark/light mode
+		sync automatically?
+
 	panels:
 		icon
 		text
 		color?
+		gradient?
 		fonts?
 		styles?
 		css???
@@ -104,22 +157,28 @@ users:
 				slow chat off
 
 */
+const emitIO = (socket, actions) => {
+  actions.forEach((action, i) => {
+    if (action.type = 'launch') {
+      socket.emit('launch', action)
+    } else if (false) {
+
+    }
+  })
+}
 
 // Socket.io server
 io.on('connection', socket => {
   console.log('Socket connected: ', socket.id)
-
+  emitIO(socket, [{ tye: 'launch', launch: 'atom' }])
   socket.on('io', data => {
     console.log('io', data)
+    if (data.type == 'launch') {
+    	console.log('!!!!!!!1launching')
+    }
   })
 
   socket.on('message', data => {
-    if (data.value == 'launch') {
-      socket.broadcast.emit('io', {
-        open: true,
-        launch: 'obs'
-      })
-    }
     console.log('message: ', data)
     messages.push(data)
     socket.broadcast.emit('message', data)
@@ -132,14 +191,7 @@ io.on('connection', socket => {
 
 io.on('connect', socket => {
   socket.emit('message', '~~~ Stream Hero Connected ~~~')
-  socket.emit('io', {
-    launch: {
-      test: 'test',
-      obs: 'obs',
-      discord: 'discord',
-      browser: 'browser'
-    }
-  })
+  emitIO(socket, [{ tye: 'launch', launch: 'discord' }])
 })
 
 const getUniqueName = () => {
@@ -158,42 +210,58 @@ const getUniqueName = () => {
 // Custom Routing
 app.prepare()
   .then(() => {
-    // HTTP server
-
     // JSON API
     express.get('/io/connect', (req, res) => {
       	const name = getUniqueName()
     	res.json(name)
     })
+
     express.get('/io/connect/:id', (req, res) => {
-      const queryParams = { connection: req.params.id }
-      let name
-      if (!connections[ queryParams.connection ]) {
-      	name = getUniqueName()
+      // QRAB QUERY
+      const queryParams = { heroName: req.params.id }
+      // CLEAN URI
+      let heroname = encodeURIComponent(queryParams.heroName)
+      if (!connections.heroName) {
+      	// New Dashboard
+      	// Add to DB - TODO
+      	connections.heroName = heroName
+      	connections.heroName.id = activeConnections.id
+      	res.redirect(`/d/${heroname}`)
+      } else {
+      	// Dashboard exists
+      	activeConnections[ heroname ] = heroName
       }
-      res.json(name)
+      res.redirec(`/d/${heroname}?np=1`)
     })
 
     express.get('/io/messages', (req, res) => {
       res.json(messages)
     })
 
-    express.get('/p/:id', (req, res) => {
-      const actualPage = '/post'
-      const queryParams = { title: req.params.id }
-      app.render(req, res, actualPage, queryParams)
+    express.get('/getio', (req, res) => {
+      res.json(io)
     })
 
-    // express.get("/p/:id", (req, res) => {
-    // 	const actualPage = "/post";
-    // 	const queryParams = { title: req.params.id };
-    // 	app.render(req, res, actualPage, queryParams);
-    // });
+    express.get('/getio', (req, res) => {
+      res.json(io)
+    })
+
+    // HTTP server
+    // express.get('/d', (req, res) => {
+    //   // If logged in, DASHBOARD from storage
+    //   // If not, HOMEPAGE
+    // })
+
+    express.get('/d/:id', (req, res) => {
+      const actualPage = '/dashboard'
+      const queryParams = { heroName: req.params.id, np: req.params.np || true }
+      app.render(req, res, actualPage, queryParams)
+    })
 
     express.get('*', (req, res) => {
       const parsedUrl = parse(req.url, true)
       const { pathname, query } = parsedUrl
-      return handle(req, res, parsedUrl)
+      handle(req, res, parsedUrl)
     })
 
     server.listen(3000, err => {

@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {render} from 'react-dom';
 import Head from 'next/head'
 import { arrayMove, SortableContainer, SortableElement } from "react-sortable-hoc";
-import gridItem from './section/gridItem'
 import names from '../static/js/names.js'
 
 const ROW_HEIGHT = 30;
