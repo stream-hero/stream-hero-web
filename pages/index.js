@@ -7,9 +7,6 @@
  */
 import Layout from '../layouts/main'
 import Meta from './section/Meta'
-// import Dashboard from './Dashboard'
-import Grid from './Grid'
-import Qr from '../components/Qr'
 import Head from 'next/head'
 
 const title = 'SH Server'
@@ -20,9 +17,9 @@ export default () => (
       <title>{title}</title>
       <Meta />
     </Head>
+
     <h1>{title}</h1>
-    <Grid />
-    <Qr />
+    <h2>Don't let your Streams be Dreams.</h2>
     <style jsx>{`
       h1,
       a {

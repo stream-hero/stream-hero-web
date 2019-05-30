@@ -242,10 +242,6 @@ app.prepare()
       res.json(io)
     })
 
-    express.get('/getio', (req, res) => {
-      res.json(io)
-    })
-
     // HTTP server
     // express.get('/d', (req, res) => {
     //   // If logged in, DASHBOARD from storage

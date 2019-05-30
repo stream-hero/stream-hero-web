@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import fetch from "isomorphic-fetch";
 
-/* This is the proxy API between Streeam Hero and it's accompanyingg app: "stream-hero" amd "stream hero-client" /
+/* This is the proxy API between Streeam Hero and it's accompanyingg app: "stream-hero" amd "stream hero-client" */
 
 class HelloUA extends React.Component {
 	static async getInitialProps({ req }) {
@@ -25,7 +25,7 @@ class HelloUA extends React.Component {
 
 	// connect to WS server and listen event
 	componentDidMount() {
-		this.socket = io();
+		this.socket = io(/* SOCKET */);
 		this.socket.on("message", this.handleMessage);
 		this.socket.on("now", data => {
 			this.setState({text: data.message})

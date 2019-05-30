@@ -1,27 +1,20 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
-function Header() {
-	return (
-		<nav>
-			<ul>
-				<li>
-					<Link prefetch href="/">
-						<a>Home</a>
-					</Link>
-				</li>
-				<li>
-					<Link prefetch href="/about">
-						<a>About</a>
-					</Link>
-				</li>
-				<li>
-					<Link prefetch href="/contact">
-						<a>Contact</a>
-					</Link>
-				</li>
-			</ul>
-		</nav>
-	);
-}
-
-export default Header;
+export default ({ children }) => (
+  <div className='footer'>
+    <nav>
+      <ul>
+        <li>
+          <Link prefetch href='/d'>
+            <a>StreamHero</a>
+          </Link>
+        </li>
+        <li className='float-right'>
+          <Link prefetch href='/download'>
+            <a>Get ScreenHero</a>
+          </Link>
+        </li>
+      </ul>
+    </nav>
+  </div>
+)
