@@ -6,6 +6,5 @@ export default ({ children }) => (
     <Meta title={'Stream Hero'} />
     <Header />
     { children }
-    <Footer />
   </div>
 )
