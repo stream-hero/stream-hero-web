@@ -11,10 +11,10 @@ const qualifiers = Object.assign(adjectives, superbName)
 const words = [randAnimal, catName, dogName, pokemon, superhero, supervillain]
 
 const names = () => {
-  const randomName = qualifiers[Math.floor(Math.random() * qualifiers.length)].toLowerCase() +
+  const randomName = qualifiers[Math.floor(Math.random() * qualifiers.length)] +
 		' ' +
-		words[Math.floor(Math.random() * words.length)].toLowerCase()
-  return randomName.replace(/ /g, '-')
+		words[Math.floor(Math.random() * words.length)]
+  return randomName.replace(/[\W_]+/g, '-').toLowerCase()
 }
 
 module.exports = names

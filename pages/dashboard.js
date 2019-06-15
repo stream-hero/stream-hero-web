@@ -2,7 +2,9 @@
 import Head from 'next/head'
 import Layout from '../layouts/main.js'
 import Link from 'next/link'
-import fetch from 'isomorphic-unfetch'
+
+import got from 'got'
+import { APPNAME, DOMAIN, TAG } from '../constants/globals'
 
 const Dashboard = (props) => (
   <Layout>
@@ -13,15 +15,15 @@ const Dashboard = (props) => (
   </Layout>
 )
 
-Dashboard.getInitialProps = async function () {
-  const res = await fetch('https://api.tvmaze.com/search/shows?q=batman')
-  const data = await res.json()
+// Dashboard.getInitialProps = async function () {
+//   const res = await got('https://api.tvmaze.com/search/shows?q=batman')
+//   const data = await res.json()
 
-  console.log(`Show data fetched. Count: ${data.length}`)
+//   console.log(`Show data fetched. Count: ${data.length}`)
 
-  return {
-    shows: data.map(entry => entry.show)
-  }
-}
+//   return {
+//     shows: data.map(entry => entry.show)
+//   }
+// }
 
 export default Dashboard

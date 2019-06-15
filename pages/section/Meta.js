@@ -1,8 +1,9 @@
 import Head from 'next/head'
+import { APPNAME } from '../../constants/globals'
 
 export default ({ children }) => (
   <Head>
-    <title>{children || 'Stream Hero'}</title>
+    <title>{children || APPNAME}</title>
     <meta
       name='viewport'
       content='initial-scale=1.0, width=device-width'

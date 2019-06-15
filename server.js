@@ -20,7 +20,7 @@ let port = process.env.PORT || 3000
 // fake DB
 let messages = []
 let connections = {}
-let activeConnections = {}
+let activeConnections = []
 let ioActions = [
   {
     type: 'boot'
@@ -35,7 +35,7 @@ let ioActions = [
 // 		name,
 // 		phone,
 // 		gridSize,
-// 		emsil?
+// 		email?
 // 		seetings
 // 	}
 // }
@@ -55,13 +55,13 @@ let ioActions = [
 pm2 - process manager
 TWILIO - SMS verification
 Offline reconnection for mobile app: https://www.twilio.com/blog/2017/02/send-messages-when-youre-back-online-with-service-workers-and-background-sync.html
-
+convert to use logger instead of console
 io types besides launch
 
 SERVER ON CONNECT/reset:
 	enumerate connected users:
 		soucket.id:
-			Lookup heroname
+			Lookup heroName
 				If active on control device, attempt reconnect TODO
 
 users:
@@ -167,10 +167,21 @@ const emitIO = (socket, actions) => {
   })
 }
 
+const getUniqueName = () => {
+  // FAKE DB
+  // Get unique name
+  // TODO clear disconnections
+  let name
+  do {
+	  name = names()
+  } while (!name && connections.hasOwnProperty(name))
+  return name
+}
+
 // Socket.io server
 io.on('connection', socket => {
   console.log('Socket connected: ', socket.id)
-  emitIO(socket, [{ tye: 'launch', launch: 'atom' }])
+  // emitIO(socket, [{ type: 'launch', launch: 'atom' }])
   socket.on('io', data => {
     console.log('io', data)
     if (data.type == 'launch') {
@@ -191,18 +202,8 @@ io.on('connection', socket => {
 
 io.on('connect', socket => {
   socket.emit('message', '~~~ Stream Hero Connected ~~~')
-  emitIO(socket, [{ tye: 'launch', launch: 'discord' }])
+  // emitIO(socket, [{ type: 'launch', launch: 'discord' }])
 })
-
-const getUniqueName = () => {
-  // Get unique name
-  let name
-  do {
-	  name = names()
-  } while (!name || connections[name])
-  connections[name] = {}
-  return name
-}
 
 // macOS: Hide dock icon
 // if (app.dock && !opts.showDockIcon) app.dock.hide()
@@ -212,34 +213,50 @@ app.prepare()
   .then(() => {
     // JSON API
     express.get('/io/connect', (req, res) => {
-      	const name = getUniqueName()
+      const name = getUniqueName()
     	res.json(name)
+    })
+
+    express.get('/io/check/:id', (req, res) => {
+    	// Returns true if a heroName is available
+    	const queryParams = { heroName: req.params.id }
+    	const heroName = queryParams.heroName
+    	res.json(connections.hasOwnProperty(heroName))
     })
 
     express.get('/io/connect/:id', (req, res) => {
       // QRAB QUERY
       const queryParams = { heroName: req.params.id }
       // CLEAN URI
-      let heroname = encodeURIComponent(queryParams.heroName)
-      if (!connections.heroName) {
-      	// New Dashboard
+      let heroName = encodeURIComponent(queryParams.heroName)
+    	console.log('New Hero Connected', heroName)
+
+      if (connections.heroName && connections.heroName.active) {
+      	// New Login - setup new user
+      	// Hash beroName
       	// Add to DB - TODO
-      	connections.heroName = heroName
-      	connections.heroName.id = activeConnections.id
-      	res.redirect(`/d/${heroname}`)
-      } else {
+      	// USE ID - TODO
       	// Dashboard exists
-      	activeConnections[ heroname ] = heroName
+      	connections.heroName = {
+      		heroName
+      	}
+      	activeConnections.push(heroName)
+	      res.redirect(`/d/${heroName}`)
+
+      	// connections.heroName['id'] = activeConnections.id
+      	// connections.heroName['userName'] = userName // better heroName
+      	// connections.heroName['email'] = email
+      	// connections.heroName['userName'] = userName
+      	// connections.heroName['gridSize'] = gridSize //start with default
+
+      	res.redirect(`/d/${heroName}?n=1`)
+      } else {
+
       }
-      res.redirec(`/d/${heroname}?np=1`)
     })
 
     express.get('/io/messages', (req, res) => {
       res.json(messages)
-    })
-
-    express.get('/getio', (req, res) => {
-      res.json(io)
     })
 
     // HTTP server
@@ -250,8 +267,24 @@ app.prepare()
 
     express.get('/d/:id', (req, res) => {
       const actualPage = '/dashboard'
-      const queryParams = { heroName: req.params.id, np: req.params.np || true }
+      // TODO doucle check if new
+      const queryParams = { heroName: req.params.id, n: req.params.np || true }
       app.render(req, res, actualPage, queryParams)
+    })
+
+    // express.get('/download', (req, res) => {
+    //   const actualPage = '/dashboard'
+    //   const queryParams = { heroName: req.params.id, np: req.params.np || true }
+    //   app.render(req, res, actualPage, queryParams)
+    // })
+
+    /* Admin Routes */
+    express.get('/admin/users', (req, res) => {
+      res.json(activeConnections)
+    })
+    /* Admin Routes */
+    express.get('/admin/users/all', (req, res) => {
+      res.json(connections)
     })
 
     express.get('*', (req, res) => {

@@ -12,29 +12,24 @@ import defaults from '../constants/defaults'
 
 export default () => (
   <Layout>
-    <Head>
-      {defaults.title('Stream Hero / The fundamental streaming tool')}
-      <Meta />
-    </Head>
-    <div className='container'>
 
-      <h1 />
-      <h2>Don't let your Streams be Dreams.</h2>
+    <div className='container'>
+      <h1>Take control of your machine</h1>
+      <h2>{
+      	"One more thing you didn't know your phone could do" ||
+      	'Put your phone where your money should be'
+      }</h2>
+      <button>Create your dashboard</button>
+
+      <h5>Already have a dashboard? (you can also scan the QR code below)</h5>
+      <input type='text' onchange={() => ''} />
+
     </div>
+
     <style jsx>{`
     	.container {
-    	  position: absolute;
-    	  top: 30%;
-    	  left: 10px;
-    	  text-align: center;
-    	}
-
-    	.container h2 {
-    	  font-size: 5rem;
-    	}
-
-    	.container a {
-    	  font-size: 1.4rem;
+    	  display: flex;
+    	  flex-direction: column;
     	}
 
     	.btn {
@@ -59,20 +54,6 @@ export default () => (
 
     	}
 
-      h1,
-      a {
-        font-family: 'Arial';
-      }
-
-      ul {
-        padding: 0;
-      }
-
-      li {
-        list-style: none;
-        margin: 5px 0;
-      }
-
       a {
         text-decoration: none;
         color: blue;
@@ -80,10 +61,6 @@ export default () => (
 
       a:hover {
         opacity: 0.6;
-      }
-
-      .container {
-        display: flex;
       }
     `}</style>
   </Layout>
