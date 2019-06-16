@@ -9,7 +9,8 @@ const express = require('express')()
 const server = require('http').Server(express)
 const io = require('socket.io')(server)
 
-const names = require('./static/js/names')
+const broadcast = require('./static/js/broadcast')
+const randomNames = require('./static/js/names')
 
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
@@ -18,7 +19,7 @@ const handle = app.getRequestHandler()
 let port = process.env.PORT || 3000
 
 // fake DB
-let messages = []
+let DBmessages = []
 let connections = {}
 let activeConnections = []
 let ioActions = [
@@ -157,25 +158,52 @@ users:
 				slow chat off
 
 */
+
+/* Actions */
 const emitIO = (socket, actions) => {
   actions.forEach((action, i) => {
-    if (action.type = 'launch') {
-      socket.emit('launch', action)
-    } else if (false) {
-
-    }
+    switch (action.type) {
+    	case 'launch':
+	      socket.emit('launch', action)
+	      break
+	    default:
+	    	break
+	   }
   })
 }
 
+/* DB ACTIONS */
 const getUniqueName = () => {
   // FAKE DB
   // Get unique name
   // TODO clear disconnections
   let name
   do {
-	  name = names()
-  } while (!name && connections.hasOwnProperty(name))
+	  name = randomNames()
+	  console.log(name)
+  } while (!name && getNameExists(name))
   return name
+}
+
+// Add messages from WS
+const addMessage = (data) => DBmessages.push(data)
+
+// Return user
+const getUser = (heroName) => connections[heroName] && connections[heroName]
+
+// Display all users
+const getUsers = () => Object.keys(connections)
+
+// Return true if hero exists | bool
+const getNameExists = (heroName) => !!connections.hasOwnProperty(heroName)
+
+// Return all DB messages
+const getMessages = () => DBmessages
+
+// Combine state for hero
+const setUser = (heroName, hero) => {
+  connections[heroName] = Object.assign({}, connections[heroName], hero)
+  console.log(connections[heroName])
 }
 
 // Socket.io server
@@ -185,18 +213,18 @@ io.on('connection', socket => {
   socket.on('io', data => {
     console.log('io', data)
     if (data.type == 'launch') {
-    	console.log('!!!!!!!1launching')
+    	console.log('!!!!!!!1launching', data)
     }
   })
 
   socket.on('message', data => {
     console.log('message: ', data)
-    messages.push(data)
+    addMessage(data)
     socket.broadcast.emit('message', data)
   })
 
-  socket.on('disconnect', function () {
-    console.log('user disconnected')
+  socket.on('disconnect', function (data) {
+    console.log('user disconnected', data)
   })
 })
 
@@ -211,37 +239,45 @@ io.on('connect', socket => {
 // Custom Routing
 app.prepare()
   .then(() => {
-    // JSON API
+    /* JSON API */
+
+    // Returns a unique string for ids
     express.get('/io/connect', (req, res) => {
       const name = getUniqueName()
     	res.json(name)
     })
 
-    express.get('/io/check/:id', (req, res) => {
-    	// Returns true if a heroName is available
+  	// Returns true if a heroName is taken
+    express.get('/io/name/:id', (req, res) => {
     	const queryParams = { heroName: req.params.id }
-    	const heroName = queryParams.heroName
-    	res.json(connections.hasOwnProperty(heroName))
+    	const heroName = encodeURIComponent(queryParams.heroName)
+
+    	const exists = getNameExists(heroName)
+
+    	res.json(exists)
     })
 
+    // Auth and connect Hero
     express.get('/io/connect/:id', (req, res) => {
-      // QRAB QUERY
+      // GRAB QUERY
       const queryParams = { heroName: req.params.id }
       // CLEAN URI
       let heroName = encodeURIComponent(queryParams.heroName)
     	console.log('New Hero Connected', heroName)
 
-      if (connections.heroName && connections.heroName.active) {
+      if (!connections[heroName]) {
       	// New Login - setup new user
       	// Hash beroName
       	// Add to DB - TODO
       	// USE ID - TODO
       	// Dashboard exists
-      	connections.heroName = {
-      		heroName
+      	// !connections[heroName]
+      	let hero = {
+      		active: true,
+      		activeDate: Date.now()
       	}
-      	activeConnections.push(heroName)
-	      res.redirect(`/d/${heroName}`)
+
+      	setUser(heroName, hero)
 
       	// connections.heroName['id'] = activeConnections.id
       	// connections.heroName['userName'] = userName // better heroName
@@ -250,27 +286,37 @@ app.prepare()
       	// connections.heroName['gridSize'] = gridSize //start with default
 
       	res.redirect(`/d/${heroName}?n=1`)
+      } else if (connections[heroName] && !connections[heroName]['active']) {
+      	// Old name, new login
+      	let hero = {
+      		active: true,
+      		activeDate: Date.now()
+      	}
+      	setUser(heroName, hero)
+	      res.redirect(`/d/${heroName}?rn=1`)
       } else {
-
+      	// Old name, new login
+      	let hero = {
+      		active: true,
+      		activeDate: Date.now()
+      	}
+      	setUser(heroName, hero)
+	      res.redirect(`/d/${heroName}`)
       }
     })
 
+    // Returns array of un-processed messages
     express.get('/io/messages', (req, res) => {
+    	const messages = getMessages()
       res.json(messages)
     })
 
-    // HTTP server
+    /* HTTP Server */
+
     // express.get('/d', (req, res) => {
     //   // If logged in, DASHBOARD from storage
     //   // If not, HOMEPAGE
     // })
-
-    express.get('/d/:id', (req, res) => {
-      const actualPage = '/dashboard'
-      // TODO doucle check if new
-      const queryParams = { heroName: req.params.id, n: req.params.np || true }
-      app.render(req, res, actualPage, queryParams)
-    })
 
     // express.get('/download', (req, res) => {
     //   const actualPage = '/dashboard'
@@ -278,13 +324,32 @@ app.prepare()
     //   app.render(req, res, actualPage, queryParams)
     // })
 
-    /* Admin Routes */
-    express.get('/admin/users', (req, res) => {
-      res.json(activeConnections)
+    // Dashboard page, np=1 if new
+    express.get('/d/:heroName', (req, res) => {
+      const actualPage = '/dashboard'
+      // TODO double check if new
+      const queryParams = { heroName: req.params.heroName, n: req.params.np || true }
+
+      app.render(req, res, actualPage, queryParams)
     })
+
     /* Admin Routes */
+    // Display single WS user
+    express.get('/admin/users/:heroName', (req, res) => {
+      const queryParams = { heroName: req.params.heroName }
+      const heroName = encodeURIComponent(queryParams.heroName)
+      res.json(getUser(heroName))
+    })
+
+    // Display active WS users
+    express.get('/admin/users/active', (req, res) => {
+      // res.json(getUsers())
+      res.json(getUsers())
+    })
+
+    // Display all WS users
     express.get('/admin/users/all', (req, res) => {
-      res.json(connections)
+      res.json(getUsers())
     })
 
     express.get('*', (req, res) => {

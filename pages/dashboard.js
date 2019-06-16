@@ -9,8 +9,8 @@ import { APPNAME, DOMAIN, TAG } from '../constants/globals'
 const Dashboard = (props) => (
   <Layout>
     <h1>Hero Dashboard</h1>
-    <Link as={`/d/${props.id}`} href={`/dashboard?id=${props.id}`}>
-      <a>Goto dashboard ${props.id}</a>
+    <Link as={`/d/${props.heroName}`} href={`/dashboard?id=${props.heroName}`}>
+      <a>Goto dashboard {props.heroName}</a>
     </Link>
   </Layout>
 )

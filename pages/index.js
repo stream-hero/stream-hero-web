@@ -22,7 +22,7 @@ export default () => (
       <button>Create your dashboard</button>
 
       <h5>Already have a dashboard? (you can also scan the QR code below)</h5>
-      <input type='text' onchange={() => ''} />
+      <input type='text' onChange={() => ''} />
 
     </div>
 

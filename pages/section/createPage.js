@@ -4,7 +4,7 @@ function IndexPage () {
   return (
     <div>
       <Head>
-        <title>asd</title>
+        <title>Stream Hero</title>
       </Head>
       <p>Hello world!</p>
     </div>
