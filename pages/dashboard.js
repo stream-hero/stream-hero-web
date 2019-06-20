@@ -6,15 +6,16 @@ import got from 'got'
 import { APPNAME, DOMAIN, TAG } from '../constants/globals'
 
 class Dashboard extends React.Component {
-  static getInitialProps ({ query: { heroName } }) {
-    return { heroName }
+  static getInitialProps ({ query }) {
+  	console.log(query)
+    return { query }
   }
   render () {
     return (
       <Layout>
         <h1>Hero Dashboard</h1>
-        <Link as={`/x/${this.props.heroName}`} href={`/dashboard?id=${this.props.heroName}`}>
-          <a>Goto dashboard {this.props.heroName}</a>
+        <Link as={`/x/${this.props.query.id}`} href={`/dashboard?id=${this.props.query.id}`}>
+          <a>Goto dashboard {this.props.query.id}</a>
         </Link>
       </Layout>
     )

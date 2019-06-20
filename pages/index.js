@@ -22,7 +22,7 @@ const searchAPI = async heroName => {
 	if (heroName in blacklist) {
 		return false
 	}
-	const res = await fetch("/io/exists/" + encodeURIComponent(heroName)).then(
+	const res = await fetch(`/io/exists/${encodeURIComponent(heroName)}`).then(
 		response => response.json()
 	);
 
@@ -38,8 +38,10 @@ class Index extends React.Component {
 		result: false
 	};
 
-	handleConnect = async e => {
-		// alert(this.state.heroName);
+	handleConnect = async heroName => {
+		const res = await fetch(`/x/${heroName}`);
+		console.log('!!!', res)
+		this.setState({ heroName: res });
 	};
 
 	handleTextChange = async e => {
@@ -56,11 +58,12 @@ class Index extends React.Component {
 
 	randomName = async e => {
 		const res = await fetch("/io/connect").then(response => response.json());
+		console.log('randomName: ', res)
 		this.setState({ heroName: res });
 	};
 
 	componentWillUnmount() {
-		this.setState = () => {};
+		// this.setState = () => {};
 	}
 
 	render() {
@@ -82,7 +85,7 @@ class Index extends React.Component {
 					/>
 
 			  	<Link as={`/x/${this.state.heroName}`} href={`/dashboard?id=${this.state.heroName}`}>
-						<button disabled={!this.state.heroName} onClick={this.handleConnect}>
+						<button disabled={!this.state.heroName} onClick={() => this.handleConnect(this.state.heroName)}>
 							{this.state.result
 								? `Connect to existing Dashboard: `
 								: `Create new Dashboard: `}{" "}

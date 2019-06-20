@@ -268,6 +268,7 @@ app
 
       let hero = {
         heroName,
+      	queryParams,
         active: true,
         activeDate: Date.now(),
         hash: hasha(heroName),
