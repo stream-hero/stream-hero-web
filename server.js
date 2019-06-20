@@ -21,7 +21,7 @@ const handle = app.getRequestHandler()
 let port = process.env.PORT || 3000
 
 // fake DB
-let DBmessages = []
+let DBmessages = {}
 let connections = {}
 let activeConnections = []
 let ioActions = [
@@ -244,6 +244,12 @@ app
       const messages = getMessages()
       res.json(messages)
     })
+
+    // // Returns array of un-processed messages
+    // express.get('/io/messages', (req, res) => {
+    //   const messages = getMessages()
+    //   res.json(messages)
+    // })
 
     /* HTTP Server */
 
