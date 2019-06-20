@@ -39,9 +39,11 @@
   "homepage": "https://github.com/stream-hero/stream-hero-web#readme",
   "dependencies": {
     "array-move": "^2.1.0",
+    "awesome-debounce-promise": "^2.1.0",
     "cat-names": "^3.0.0",
     "dog-names": "^2.0.0",
     "express": "^4.16.4",
+    "hasha": "^5.0.0",
     "isomorphic-fetch": "^2.2.1",
     "next": "^8.1.0",
     "open": "^6.2.0",
@@ -59,7 +61,8 @@
     "standard": "^12.0.1",
     "superb": "^4.0.0",
     "superheroes": "^3.0.0",
-    "supervillains": "^3.0.0"
+    "supervillains": "^3.0.0",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@zeit/next-sass": "^1.0.1",

@@ -12,7 +12,7 @@ function Footer () {
             <a className='heart'>Lacy Morrow</a>
           </Link>
         </li>
-        <li>
+        <li className='width-sm'>
           <Qr />
         </li>
         <li>

@@ -1,5 +1,3 @@
-import React, {Component} from 'react';
-import {render} from 'react-dom';
 import Head from 'next/head'
 import { arrayMove, SortableContainer, SortableElement } from "react-sortable-hoc";
 import names from '../static/js/names.js'
@@ -22,7 +20,7 @@ const SortableList = SortableContainer(({ items }) => {
 });
 
 
-class SortableComponent extends Component {
+class SortableComponent extends React.Component {
   state = {
     items: [
       "Item 1",
