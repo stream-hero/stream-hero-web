@@ -63,7 +63,7 @@ class Index extends React.Component {
 	};
 
 	componentWillUnmount() {
-		// this.setState = () => {};
+		this.setState = () => {};
 	}
 
 	render() {
