@@ -29,7 +29,7 @@ const searchAPI = async heroName => {
 	return res;
 };
 
-const searchAPIDebounced = AwesomeDebouncePromise(searchAPI, 500);
+const searchAPIDebounced = AwesomeDebouncePromise(searchAPI, 400);
 
 class Index extends React.Component {
 	state = {
@@ -39,9 +39,10 @@ class Index extends React.Component {
 	};
 
 	handleConnect = async heroName => {
-		const res = await fetch(`/x/${heroName}`);
-		console.log('!!!', res)
-		this.setState({ heroName: res });
+		const response = await fetch(`/x/${heroName}`);
+		const result = response.json()
+		console.log('!!!', result)
+		this.setState({ heroName: result });
 	};
 
 	handleTextChange = async e => {
